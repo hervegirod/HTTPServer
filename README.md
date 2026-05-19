@@ -1,4 +1,4 @@
-# fxsvgimage
+# HTTP Server
 This library is a simple an compact Java HTTP Server using the nanohttpd library. Note that this library has no dependencies, the nanohttpd library is embedded.
 
 # History
