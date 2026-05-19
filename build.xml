@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<!-- By default, only the Clean and Build commands use this build script. -->
+<!-- Commands such as Run, Debug, and Test only use this build script if -->
+<!-- the Compile on Save feature is turned off for the project. -->
+<!-- You can turn off the Compile on Save (or Deploy on Save) setting -->
+<!-- in the project's Project Properties dialog box.-->
+<project name="HttpServer" default="default" basedir=".">
+    <description>Builds, tests, and runs the project HttpServer.</description>
+    <import file="nbproject/build-impl.xml"/>
+   <!-- =================================================================== -->
+   <!-- post NB init -->
+   <!-- =================================================================== -->
+   <target name="-post-init" depends="-init-project" >
+      <!-- JDK definition -->
+      <property name="jdk" value="L:\WRK\Java\Tools\jdk1.8.0_202"/> 
+      <!-- To set with your location of Java 8 JDK -->
+      <property name="javadocEXE" value="${jdk}/bin/javadoc.exe"/>      
+      <!-- general properties definition -->
+      <property name="archiveName" value="HttpServer"/>
+      <property name="src.dir" value="${src.server.dir}/.." />
+   </target>    
+   
+   <!-- =================================================================== -->
+   <!-- Non NB targets -->
+   <!-- =================================================================== -->
+   <target description="fetch version" depends="-post-init" name="version">
+      <loadproperties srcFile="${src.server.dir}/org/girod/httpserver/httpserver.properties">
+         <filterchain>
+            <linecontains>
+               <contains value="version"/>
+            </linecontains>
+         </filterchain>
+      </loadproperties>
+   </target>   
+   
+   <!-- =================================================================== -->
+   <!-- zip files -->
+   <!-- =================================================================== -->
+   <target depends="version, -post-init, -zipsources, -zipbinaries, -zipjavadoc" description="create zip files" name="zip">
+   </target>   
+
+   <!-- zip binaries -->
+   <target depends="version, -post-init" name="-zipbinaries" >
+      <!-- zip binary files -->
+      <zip compress="true" defaultexcludes="true" zipfile="${dist.dir}/${archiveName}-bin-${version}.zip">
+         <fileset description="binaries" dir="${dist.dir}">
+            <include name="HttpServer.jar"/>
+            <include name="HttpServerGUI.jar"/>
+         </fileset>  
+         <fileset description="scripts" dir=".">
+            <include name="scripts/*"/>
+         </fileset>            
+         <fileset description="miscellanous" dir=".">
+            <include name="README.md"/>
+            <include name="HISTORY.md"/>
+            <include name="LICENSE"/>         
+         </fileset>     
+      </zip>
+   </target>
+   
+   <!-- zip sources -->
+   <target depends="version, -post-init" name="-zipsources">
+      <!-- zip source files -->
+      <zip compress="true" defaultexcludes="true" zipfile="${dist.dir}/${archiveName}-src-${version}.zip">
+         <fileset description="source directory" dir="${src.dir}/..">
+            <include name="src/**/*.java"/>
+            <include name="src/**/*.html"/>
+            <include name="src/**/*.properties"/>
+            <include name="src/**/*.mf"/>
+         </fileset>
+         <fileset description="scripts" dir=".">
+            <include name="scripts/*"/>
+         </fileset>           
+         <fileset description="binaries" dir="${dist.dir}">
+            <include name="HttpServer.jar"/>
+            <include name="HttpServerGUI.jar"/>
+         </fileset>  
+         <fileset description="miscellanous" dir=".">
+            <include name="README.md"/>
+            <include name="HISTORY.md"/>
+            <include name="LICENSE"/>
+            <include name="nbproject/**/*.*"/>
+            <include name="build.xml"/>               
+         </fileset>     
+      </zip>
+   </target>   
+   
+   <!-- zip binaries -->
+   <target depends="version, -post-init" name="-zipjavadoc" >
+      <!-- zip binary files -->
+      <zip compress="true" defaultexcludes="true" zipfile="${dist.dir}/${archiveName}-docs-${version}.zip">
+         <fileset description="documentation" dir="${dist.javadoc.dir}">
+            <include name="**/*"/>
+         </fileset>    
+      </zip>
+   </target>   
+   
+   <!-- =================================================================== -->
+   <!-- NB overwrite targets : javadocs                                     -->
+   <!-- =================================================================== -->
+
+   <target depends="-javadoc-core" name="-javadoc-build" />
+
+   <target depends="init, -init-project, -post-init" name="-javadoc-core">
+      <!-- Javadoc -->
+      <javadoc author="${javadoc.author}" charset="UTF-8" destdir="${dist.javadoc.dir}"
+               docencoding="UTF-8" encoding="${javadoc.encoding.used}" failonerror="true"
+               noindex="${javadoc.noindex}" nonavbar="${javadoc.nonavbar}"
+               notree="${javadoc.notree}" private="${javadoc.private}"
+               source="${javac.source}" splitindex="${javadoc.splitindex}"
+               use="${javadoc.use}" useexternalfile="true" version="${javadoc.version}"
+               windowtitle="${javadoc.windowtitle}" executable="${javadocEXE}" >         
+         <link href="${j2seapi}" />
+         <!-- the Xdoclint argument avoid to get javadoc errors when the documentation format is not compliant for HTML 4, which was the case before
+         Java 8. It would also not be a good idea, because empty tags like br are very useful -->
+         <arg line="-Xdoclint:none"/>   
+         <fileset dir="${src.dir}" defaultexcludes="yes">
+            <include name="nanohttpd/**/*.java"/>
+            <include name="server/**/*.java"/>
+         </fileset>                         
+         <classpath>
+            <path path="${javac.classpath}"/>
+         </classpath>         
+         <group title="HTTP Server">
+            <package name="org.girod.httpserver" />
+         </group>  
+         <group title="HTTP Server GUI">
+            <package name="org.girod.httpserver.gui" />
+         </group>  
+         <group title="nanohttpd">
+            <package name="org.nanohttpd*" />
+         </group>                                                   
+         <doctitle><![CDATA[<h1>HTTPServer documentation</h1>]]></doctitle>
+         <bottom>
+            <![CDATA[<i>Copyright &#169; 2026 Herve Girod. All Rights Reserved. Documentation and source under the BSD 3-Clause licence</i>]]>
+         </bottom>         
+      </javadoc>
+   </target>       
+    
+   <!-- =================================================================== -->
+   <!-- NB overwrite targets : jar                                     -->
+   <!-- =================================================================== -->
+   <target depends="init,compile,-pre-jar,-do-jar-without-manifest,-post-jar" description="Build All" name="jar"/>
+
+   <target name="-do-jar-without-manifest" depends="-jar" />
+   
+   <target name="-jar" depends="init,compile,-pre-pre-jar,-pre-jar" >
+      <jar description="jar binary file" compress="true" jarfile="${dist.dir}/HttpServer.jar" manifest="${src.dir}/manifest.mf">
+         <fileset defaultexcludes="yes" dir="${build.classes.dir}" >
+            <include name="org/**/*.class"/>
+            <include name="org/**/*.properties"/>
+            <exclude name="org/girod/httpserver/gui/**/*.*"/>
+         </fileset>
+      </jar>
+      <jar description="jar GUI binary file" compress="true" jarfile="${dist.dir}/HttpServerGUI.jar" manifest="${src.dir}/manifestGUI.mf">
+         <fileset defaultexcludes="yes" dir="${build.classes.dir}" >
+            <include name="org/girod/httpserver/gui/**/*.class"/>
+         </fileset>
+      </jar>      
+      <copy todir=".">
+         <fileset defaultexcludes="no" dir="${dist.dir}">
+            <include name="HttpServer.jar"/>
+            <include name="HttpServerGUI.jar"/>
+         </fileset>
+      </copy>      
+   </target> 
+</project>
