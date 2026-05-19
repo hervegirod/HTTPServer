@@ -15,9 +15,8 @@
    <!-- =================================================================== -->
    <target name="-post-init" depends="-init-project" >
       <!-- JDK definition -->
-      <property name="jdk" value="L:\WRK\Java\Tools\jdk1.8.0_202"/> 
-      <!-- To set with your location of Java 8 JDK -->
-      <property name="javadocEXE" value="${jdk}/bin/javadoc.exe"/>      
+      <property name="jdk" value="C:\Program Files\Java\jdk-1.8"/>  
+      <property name="javadocEXE" value="${jdk}/bin/javadoc.exe"/>        
       <!-- general properties definition -->
       <property name="archiveName" value="HttpServer"/>
       <property name="src.dir" value="${src.server.dir}/.." />
